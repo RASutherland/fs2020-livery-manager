@@ -25,7 +25,7 @@ Also credits to all the amazing livery makers which make stunning liveries.
 3. To use the script use the livery_launch.bat file to start the command line.
 
 # Adding liveries
-1. Download the livery files provided by the author of the livery example: https://drive.google.com/drive/folders/1wOKaMmCMcWFI2CQLK6FXKOQYC_i8H6S3 from @Miggle on the FS2020 discord. Most liveries can be found in the #liveries-releases section of the official microsoft flight simulator discord
+1. Download the livery files provided by the author of the livery example: https://drive.google.com/drive/folders/1wOKaMmCMcWFI2CQLK6FXKOQYC_i8H6S3 (@Miggle, MSFS discord) Most liveries can be found in the #liveries-releases section of the official microsoft flight simulator discord
 
 2. Important that you do this right: after having downloaded the livery, you DO NOT want to copy the whole thing into the discord, this will override the already existing aircraft.cfg file and therefore break every other livery you have in the pack. You'll want to get the TEXTURE.XXX folder from the download and move it to <megapack location>/SimObjects/Airplanes/Asobo_A320_NEO. In this folder you should see the aircraft.cfg file and possibly other TEXTURE.XXX folders. After having done this, make sure to remember what the XXX where in your TEXTURE folder. Example if you were copying TEXTURE.HKE from the link above, you would have to remember the HKE part
   
