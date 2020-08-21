@@ -63,7 +63,7 @@ public class Main {
 
         System.out.println("\n==========Airplane registration========="
                 + "\nSet the standard registration of the livery (e.g PH-BXW, C-XFCD, etc.), purely cosmetical"
-                + "\nenter airline name: ");
+                + "\nenter aircraft registration: ");
         planeRegistration = scanner.nextLine();
         System.out.println("Set the registration to: " + planeRegistration + "\n");
 
