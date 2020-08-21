@@ -29,7 +29,7 @@ Also credits to all the amazing livery makers which make stunning liveries.
 
 2. Important that you do this right: after having downloaded the livery, you DO NOT want to copy the whole thing into the discord, this will override the already existing aircraft.cfg file and therefore break every other livery you have in the pack. You'll want to get the TEXTURE.XXX folder from the download and move it to <megapack location>/SimObjects/Airplanes/Asobo_A320_NEO. In this folder you should see the aircraft.cfg file and possibly other TEXTURE.XXX folders. After having done this, make sure to remember what the XXX where in your TEXTURE folder. Example if you were copying TEXTURE.HKE from the link above, you would have to remember the HKE part
   
-3. Use the script to add the texture files to the config files. The script will guide you through the process, it is very important that the texture folder name matches up with the folder you want to add. when inputting this, you should only put in the part after the dot in the foldername (e.g. TEXTURE.HKE should be HKE). 
+3. Use the script to add the texture files to the config files. The script will guide you through the process, it is very important that the texture folder name matches up with the folder you want to add. when setting this in the script, you should only put in the part after the dot in the foldername (e.g. TEXTURE.HKE should be HKE). 
 
 4. If you didn't encounter any errors during the script and you put in the right values at the texture folder input, the livery should be added to the files and will therefore be selectable in game.
 
