@@ -38,4 +38,4 @@ Also credits to all the amazing livery makers which make stunning liveries.
 This can be either two things: if the selection bar is bigger than the original thumbnail this means that the game hasn't fully loaded the files yet and it will be available later.
 However if that is not the case, most likely the layout.json file within the megapack is faulty and should be fixed see the Textures not showing up issue for more information.
 ## Textures not showing up
-This is cause by a disrepancy in the layout.json file, which disables the game from using the liveries. To fix this it is recommended to try and find someone who has experience in JSON to try and find the error in the file, often this can be a comma at the end of the content array which passes an empty object to the game.
+This is caused by a disrepancy in the layout.json file, which disables the game from using the liveries. To fix this it is recommended to try and find someone who has experience in JSON to try and find the error in the file, often this can be a comma at the end of the content array which passes an empty object to the game.
