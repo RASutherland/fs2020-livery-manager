@@ -1,6 +1,7 @@
 # fs2020-livery-manager
 Livery manager for Microsoft's 2020 flight simulator.
 Created to lessen the workload for adding liveries to Clink123's megapack
+Latest megapck by Clink123: http://www.mediafire.com/file/xst0szzl9z3o7za/liveriesmegapack.zip/file
 
 # Currently only works for the A320 Neo!!!!
 
