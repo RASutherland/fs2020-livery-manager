@@ -10,5 +10,8 @@ If you run into problems please look below in the known issues list to see if yo
 # Installation
 <todo>
 
+# Adding liveries
+<todo>
+
 # Known issues
 <todo>
