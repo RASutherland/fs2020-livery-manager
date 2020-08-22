@@ -4,6 +4,7 @@ import com.google.gson.*;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.lib.ProgressMonitor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,13 +14,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class LiveryManager {
+public class LiveryManager implements Runnable{
 
     public static String jar_path;
     public static String install_folder_path;
@@ -28,31 +27,6 @@ public class LiveryManager {
     //For every airplane there should be an arraylist containing that plane's liveries
     private ArrayList<ArrayList<LiveryContainer>> liveryContainers = new ArrayList<>();
     private ArrayList<String> aircraftFolderNames = new ArrayList<>();
-
-    private Thread cleanup_thread;
-
-    public LiveryManager() throws Exception {
-
-        jar_path = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-        install_folder_path = jar_path.substring(0, jar_path.indexOf("livery-manager"));
-        download_folder_path = install_folder_path + "tmp\\";
-        System.out.println("Jar location: " + jar_path);
-        System.out.println("Install location: " + install_folder_path);
-        System.out.println("Download location: " + download_folder_path);
-
-        cleanup_thread = new Cleanup(download_folder_path);
-        Runtime.getRuntime().addShutdownHook(cleanup_thread);
-
-        File downloadDirectory = new File(download_folder_path);
-        if(!downloadDirectory.exists()) downloadDirectory.mkdir();
-        else FileUtils.cleanDirectory(downloadDirectory);
-
-        //TODO: get a gui button to do this
-        clonePublicRepo();
-        loadLiveryData();
-
-        Main.window.setAvailableLiveries(liveryContainers);
-    }
 
     //Install passed files to the right path
     public void installFiles(String folder_path, ArrayList<LiveryContainer> containersToInstall) throws IOException {
@@ -72,6 +46,18 @@ public class LiveryManager {
         Git.cloneRepository()
                 .setDirectory(new File(download_folder_path))
                 .setURI("https://github.com/Lolkilee/fs2020-megapack-liveries.git")
+                .setProgressMonitor(new ProgressMonitor() {
+                    @Override
+                    public void start(int i) {System.out.println("Loading repo...");}
+                    @Override
+                    public void beginTask(String s, int i) {}
+                    @Override
+                    public void update(int i) {Main.window.updateLoadingBar(i);}
+                    @Override
+                    public void endTask() {Main.window.doneLoading();}
+                    @Override
+                    public boolean isCancelled() {return false;}
+                })
                 .call();
     }
 
@@ -135,6 +121,7 @@ public class LiveryManager {
             String s = f.getCanonicalPath();
             s = s.substring(filePath.length());
             s = s.replace("\\", "/");
+            //s = s.substring(1);
             if(!s.contains("layout.json") && !s.contains("manifest.json")) filePaths.add(s);
         }
 
@@ -144,9 +131,9 @@ public class LiveryManager {
 
         for(String path : filePaths) {
             JsonObject tObject = new JsonObject();
-            File f = new File(filePath + path);
+            File f = new File(filePath + "\\" + path);
             tObject.addProperty("path", path);
-            tObject.addProperty("size", f.length());
+            tObject.addProperty("size", FileUtils.sizeOf(f));
             tObject.addProperty("date", 132398508779749484L);
             pathsArray.add(tObject);
         }
@@ -174,7 +161,7 @@ public class LiveryManager {
         FileWriter fileWriter = new FileWriter(configFile, true);
         fileWriter.append("\n");
         for(String line : lines) {
-            System.out.println("Line: " + line);
+            //System.out.println("Line: " + line);
             if(line.contains("%n%"))
                 line = line.replace("%n%", Integer.toString(getNum(configFile)));
             fileWriter.append(line + "\n");
@@ -194,4 +181,26 @@ public class LiveryManager {
         return n;
     }
 
+    @Override
+    public void run() {
+        try {
+            jar_path = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+            install_folder_path = jar_path.substring(0, jar_path.indexOf("livery-manager"));
+            download_folder_path = install_folder_path + "tmp\\";
+            System.out.println("Jar location: " + jar_path);
+            System.out.println("Install location: " + install_folder_path);
+            System.out.println("Download location: " + download_folder_path);
+
+            File downloadDirectory = new File(download_folder_path);
+            if (!downloadDirectory.exists()) downloadDirectory.mkdir();
+            else FileUtils.cleanDirectory(downloadDirectory);
+
+            clonePublicRepo();
+            loadLiveryData();
+
+            Main.window.setAvailableLiveries(liveryContainers);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

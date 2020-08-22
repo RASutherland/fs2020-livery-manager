@@ -32,11 +32,17 @@ public class Window {
     JFileChooser fileChooser;
     JDialog warning_no_path;
     JDialog installed_liveries_msg;
+    JDialog loading_bar;
+    JLabel lbLivery_thumbnail;
+
+    JProgressBar progress_bar;
 
     private ArrayList<LiveryContainer> available_liveries = new ArrayList<>();
     private ArrayList<LiveryContainer> selected_liveries = new ArrayList<>();
+    private LiveryContainer selected_container;
     private String[] available_liveries_name = {"No liveries detected!"};
     private String[] selected_liveries_name = {"No liveries selected!"};
+    private String[] selected_container_info = {"No livery selected"};
     private String package_folder_path = "<empty>";
 
     //for available liveries
@@ -75,9 +81,14 @@ public class Window {
         lsList0.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if(lsList0.getSelectedIndex() > -1)
-                selected_index_av = lsList0.getSelectedIndex();
-                System.out.println("index changed to: " + selected_index_av);
+                if(lsList0.getSelectedIndex() > -1) {
+                    selected_index_av = lsList0.getSelectedIndex();
+                    selected_container = available_liveries.get(selected_index_av);
+                    selected_container_info = new String[]{
+                            "Author: " + selected_container.getAuthor(),
+                            "Category: " + selected_container.getCategory()
+                    };
+                }
             }
         });
 
@@ -96,10 +107,7 @@ public class Window {
         btSelect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Pressed the select button");
-                int index = selected_index_av;
-                if(index > -1)
-                addSelectedLivery(available_liveries.get(0));
+                addSelectedLivery(selected_container);
                 updateSelection();
             }
         });
@@ -119,10 +127,7 @@ public class Window {
         btRemove.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Pressed the remove button");
-                int index = selected_index_se;
-                if(index > -1)
-                removeSelectedLivery(available_liveries.get(index));
+                removeSelectedLivery(selected_container);
                 updateSelection();
             }
         });
@@ -144,9 +149,14 @@ public class Window {
         lsSelect_liveries.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if(lsSelect_liveries.getSelectedIndex() > -1)
-                selected_index_se = lsSelect_liveries.getSelectedIndex();
-                System.out.println("index changed to: " + selected_index_se);
+                if(lsSelect_liveries.getSelectedIndex() > -1) {
+                    selected_index_se = lsSelect_liveries.getSelectedIndex();
+                    selected_container = selected_liveries.get(selected_index_se);
+                    selected_container_info = new String[]{
+                            "Author: " + selected_container.getAuthor(),
+                            "Category: " + selected_container.getCategory()
+                    };
+                }
             }
         });
 
@@ -208,7 +218,7 @@ public class Window {
         JScrollPane scpLivery_information_area = new JScrollPane( taLivery_information_area );
         gbcMain_panel.gridx = 0;
         gbcMain_panel.gridy = 14;
-        gbcMain_panel.gridwidth = 20;
+        gbcMain_panel.gridwidth = 9;
         gbcMain_panel.gridheight = 6;
         gbcMain_panel.fill = GridBagConstraints.BOTH;
         gbcMain_panel.weightx = 1;
@@ -216,6 +226,19 @@ public class Window {
         gbcMain_panel.anchor = GridBagConstraints.NORTH;
         gbMain_panel.setConstraints( scpLivery_information_area, gbcMain_panel );
         pnMain_panel.add( scpLivery_information_area );
+
+        lbLivery_thumbnail = new JLabel( ""  );
+        lbLivery_thumbnail.setSize(420, 230);
+        gbcMain_panel.gridx = 9;
+        gbcMain_panel.gridy = 14;
+        gbcMain_panel.gridwidth = 11;
+        gbcMain_panel.gridheight = 6;
+        gbcMain_panel.fill = GridBagConstraints.BOTH;
+        gbcMain_panel.weightx = 1;
+        gbcMain_panel.weighty = 1;
+        gbcMain_panel.anchor = GridBagConstraints.NORTH;
+        gbMain_panel.setConstraints( lbLivery_thumbnail, gbcMain_panel );
+        pnMain_panel.add( lbLivery_thumbnail );
 
         tfAvailabe_text = new JTextField("Available liveries");
         tfAvailabe_text.setEditable(false);
@@ -229,6 +252,7 @@ public class Window {
         gbcMain_panel.anchor = GridBagConstraints.NORTH;
         gbMain_panel.setConstraints( tfAvailabe_text, gbcMain_panel );
         pnMain_panel.add( tfAvailabe_text );
+        tfAvailabe_text.setText(selected_container_info[0]);
 
         tfSelected_text = new JTextField("Selected liveries");
         tfSelected_text.setEditable(false);
@@ -262,6 +286,7 @@ public class Window {
                 if(result == JFileChooser.APPROVE_OPTION) {
                     try {
                         package_folder_path = fileChooser.getSelectedFile().getCanonicalPath();
+                        package_folder_path += "\\megapack-liveries\\";
                         LiveryManager.install_folder_path = package_folder_path;
                         System.out.println("install path: " + LiveryManager.install_folder_path);
                     } catch (IOException ioException) {
@@ -295,12 +320,13 @@ public class Window {
                         msg.setEditable(false);
                         msg.setText("Successfully installed " + selected_liveries.size() + " liveries");
                         content.add(msg);
-                        installed_liveries_msg.setContentPane(content);
                         installed_liveries_msg = new JDialog(frame, "Installed to: " + package_folder_path);
-                        installed_liveries_msg.setSize(600, 100);
+                        installed_liveries_msg.setContentPane(content);
+                        installed_liveries_msg.setSize(300, 100);
                         installed_liveries_msg.setVisible(true);
                         installed_liveries_msg.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
                         installed_liveries_msg.setLocationRelativeTo(null);
+
 
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
@@ -321,6 +347,27 @@ public class Window {
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(width, height);
+
+        loading_bar = new JDialog(frame, "Loading... please wait");
+        loading_bar.setSize(200, 100);
+        loading_bar.setResizable(false);
+        loading_bar.setLocationRelativeTo(null);
+        loading_bar.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        JPanel loading_content = new JPanel();
+        progress_bar = new JProgressBar();
+        progress_bar.setValue(0);
+        loading_content.add(progress_bar);
+        loading_bar.setContentPane(loading_content);
+        loading_bar.setVisible(true);
+
+    }
+
+    public void updateLoadingBar(int progress) {
+        progress_bar.setValue(progress_bar.getValue() + 5);
+    }
+
+    public void doneLoading() {
+        loading_bar.setVisible(false);
     }
 
     public void update() {
@@ -335,6 +382,12 @@ public class Window {
             lsSelect_liveries.updateUI();
             hasUiChanged = false;
         }
+
+        StringBuilder stringBuilder = new StringBuilder(selected_container_info.length);
+        for(int i = 0; i < selected_container_info.length; i++) {
+            stringBuilder.append(selected_container_info[i] + "\n");
+        }
+        taLivery_information_area.setText(stringBuilder.toString());
     }
 
     public void updateList(JList list, ArrayList objs) {

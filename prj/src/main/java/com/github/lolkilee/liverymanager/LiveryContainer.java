@@ -13,12 +13,14 @@ public class LiveryContainer {
     private String livery_name;
     private String texture_folder_name;
     private String plane_name;
+    private String livery_thumbnail;
 
     //Lines of the livery.cfg file
     private ArrayList<String> config_lines = new ArrayList<String>();
 
     public LiveryContainer(String folder) throws FileNotFoundException {
         original_location = folder;
+        livery_thumbnail = original_location + "\\textures\\thumbnail.jpg";
         File file = new File(original_location);
         livery_name = file.getName();
         File f = new File(file.getParent());
@@ -62,4 +64,5 @@ public class LiveryContainer {
     public String getLiveryName() {return livery_name;}
     public String getTextureFolderName() {return texture_folder_name;}
     public String getPlaneName() {return plane_name;}
+    public String getLiveryThumbnail() {return livery_thumbnail;}
 }

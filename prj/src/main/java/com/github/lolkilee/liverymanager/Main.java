@@ -19,6 +19,7 @@ public class Main {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             window = new Window(700, 700);
             liveryManager = new LiveryManager();
+            liveryManager.run();
         } catch (Exception e) {
             e.printStackTrace();
         }
