@@ -52,6 +52,8 @@ public class Window {
 
     private boolean hasUiChanged = false;
 
+    private int counter;
+
 
     public Window(int height, int width) {
         pnMain_panel = new JPanel();
@@ -356,6 +358,7 @@ public class Window {
         JPanel loading_content = new JPanel();
         progress_bar = new JProgressBar();
         progress_bar.setValue(0);
+        progress_bar.setMaximum(770);
         loading_content.add(progress_bar);
         loading_bar.setContentPane(loading_content);
         loading_bar.setVisible(true);
@@ -363,11 +366,14 @@ public class Window {
     }
 
     public void updateLoadingBar(int progress) {
-        progress_bar.setValue(progress_bar.getValue() + 5);
+        int lastValue = progress_bar.getValue();
+        progress_bar.setValue(lastValue + progress);
+        counter += progress;
     }
 
     public void doneLoading() {
         loading_bar.setVisible(false);
+        System.out.println("Counter: " + counter);
     }
 
     public void update() {

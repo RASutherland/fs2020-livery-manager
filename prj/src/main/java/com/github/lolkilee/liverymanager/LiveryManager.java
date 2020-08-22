@@ -48,7 +48,9 @@ public class LiveryManager implements Runnable{
                 .setURI("https://github.com/Lolkilee/fs2020-megapack-liveries.git")
                 .setProgressMonitor(new ProgressMonitor() {
                     @Override
-                    public void start(int i) {System.out.println("Loading repo...");}
+                    public void start(int i) {
+                        System.out.println("Loading repo...");
+                    }
                     @Override
                     public void beginTask(String s, int i) {}
                     @Override

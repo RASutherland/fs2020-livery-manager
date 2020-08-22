@@ -64,5 +64,6 @@ public class LiveryContainer {
     public String getLiveryName() {return livery_name;}
     public String getTextureFolderName() {return texture_folder_name;}
     public String getPlaneName() {return plane_name;}
+    //TODO: add gui part which shows this thumbnail
     public String getLiveryThumbnail() {return livery_thumbnail;}
 }
