@@ -7,12 +7,15 @@ public class Main {
         in cooperation with Clink123
     */
 
+    static LiveryManager liveryManager;
+
     public static void main(String[] args){
-
+        try {
+            liveryManager = new LiveryManager();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public static String boolToString(boolean b) {
-        if(b) return "true";
-        else return "false";
-    }
+
 }
