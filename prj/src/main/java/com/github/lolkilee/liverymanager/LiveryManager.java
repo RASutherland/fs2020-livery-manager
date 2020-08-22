@@ -3,7 +3,6 @@ package com.github.lolkilee.liverymanager;
 import com.google.gson.*;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -25,19 +24,24 @@ public class LiveryManager {
     public static String jar_path;
     public static String install_folder_path;
     public static String download_folder_path;
-    public static String sim_objects_path;
 
     //For every airplane there should be an arraylist containing that plane's liveries
     private ArrayList<ArrayList<LiveryContainer>> liveryContainers = new ArrayList<>();
     private ArrayList<String> aircraftFolderNames = new ArrayList<>();
 
+    private Thread cleanup_thread;
+
     public LiveryManager() throws Exception {
+
         jar_path = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
         install_folder_path = jar_path.substring(0, jar_path.indexOf("livery-manager"));
         download_folder_path = install_folder_path + "tmp\\";
         System.out.println("Jar location: " + jar_path);
         System.out.println("Install location: " + install_folder_path);
         System.out.println("Download location: " + download_folder_path);
+
+        cleanup_thread = new Cleanup(download_folder_path);
+        Runtime.getRuntime().addShutdownHook(cleanup_thread);
 
         File downloadDirectory = new File(download_folder_path);
         if(!downloadDirectory.exists()) downloadDirectory.mkdir();
@@ -46,9 +50,20 @@ public class LiveryManager {
         //TODO: get a gui button to do this
         clonePublicRepo();
         loadLiveryData();
-        moveStandardFilesToFolder("A:\\test_folder");
-        moveLiveryFilesToFolder("A:\\test_folder\\SimObjects\\Airplanes\\Asobo_A320_NEO\\", liveryContainers.get(0).get(0));
-        updateLayoutFile("A:\\test_folder");
+
+        Main.window.setAvailableLiveries(liveryContainers);
+    }
+
+    //Install passed files to the right path
+    public void installFiles(String folder_path, ArrayList<LiveryContainer> containersToInstall) throws IOException {
+        moveStandardFilesToFolder(folder_path);
+        for(LiveryContainer container : containersToInstall) {
+            System.out.println("Installing container to: " + folder_path + "\\SimObjects\\Airplanes\\" + container.getPlaneName());
+            moveLiveryFilesToFolder(folder_path + "\\SimObjects\\Airplanes\\" + container.getPlaneName(),
+                    container);
+        }
+
+        updateLayoutFile(folder_path);
     }
 
     //Clone the livery repository for local use
@@ -94,7 +109,8 @@ public class LiveryManager {
     //Folder path is the main path of the airplane e.g. Asobo_A320_NEO
     public void moveLiveryFilesToFolder(String folder_path, LiveryContainer container) throws IOException {
         System.out.println("Moving " + container.getLiveryName() + " to: " + folder_path);
-
+        File textureDir = new File(folder_path + "\\TEXTURE." + container.getTextureFolderName().toUpperCase());
+        textureDir.mkdirs();
         File[] textureFiles = new File(container.getPath()).listFiles();
         for(File f : textureFiles) {
             if(f.isDirectory()) {
@@ -108,7 +124,7 @@ public class LiveryManager {
         appendToConfig(container.getConfig_lines(), new File(folder_path + "\\aircraft.cfg"));
     }
 
-    //TODO: finish this function
+    //Update layout.json file for the whole package
     public void updateLayoutFile(String filePath) throws IOException {
         ArrayList<String> filePaths = new ArrayList<>();
         List<File> filesInDir = Files.walk(Paths.get(filePath))
@@ -145,7 +161,7 @@ public class LiveryManager {
     //Move a file to location
     public void copyFile(File f, String location, boolean useName) throws IOException {
         File dir = new File(location);
-        if(!dir.exists()) dir.mkdir();
+        if(!dir.exists()) dir.mkdirs();
         if(useName)
             Files.copy(Paths.get(f.getCanonicalPath()), Paths.get(location + "\\" + f.getName()), StandardCopyOption.REPLACE_EXISTING);
         else

@@ -21,7 +21,8 @@ public class LiveryContainer {
         original_location = folder;
         File file = new File(original_location);
         livery_name = file.getName();
-        plane_name = file.getParent();
+        File f = new File(file.getParent());
+        plane_name = f.getName();
 
         //Read the inst.cfg file
         Scanner fileReader = new Scanner(new File(original_location + "\\inst.cfg"));
